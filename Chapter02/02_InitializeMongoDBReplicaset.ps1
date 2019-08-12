@@ -5,6 +5,8 @@
     [string]$globalMappingLocalPath = "G:"
 )
 
+docker build -t mongo-1903:latest 03_MongoDB_1903
+
 docker network create --driver nat $dockerNetworkName
 
 New-Item -ItemType Directory -Force -Path $globalMappingLocalPath\MongoData1\db
