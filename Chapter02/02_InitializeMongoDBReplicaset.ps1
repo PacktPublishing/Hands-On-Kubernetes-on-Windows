@@ -1,4 +1,4 @@
- Param(
+Param(
     [Parameter()]
     [string]$dockerNetworkName = "mongo-cluster",
     [Parameter()]
