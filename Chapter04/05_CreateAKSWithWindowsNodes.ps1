@@ -11,7 +11,8 @@ Param(
     [string]$windowsNodePoolName = "w1pool",
     [Parameter()]
     [string]$windowsUserName = "azureuser",
-    [Parameter()]
+    [Parameter(mandatory=$true)]
+    [ValidatePattern("^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%\^&\*\(\)])[a-zA-Z\d!@#$%\^&\*\(\)]{12,123}$")]
     [string]$windowsPassword
 )
 
@@ -29,20 +30,32 @@ az feature register `
 
 do {
     $featureInfo = az feature list `
-                      -o table `
-                      --query "[?contains(name, 'Microsoft.ContainerService/WindowsPreview')].{Name:name,State:properties.state}"
-    $featureStatus = $featureInfo[2].Split()[2]
+                      -o json `
+                      --query "[?contains(name, 'Microsoft.ContainerService/WindowsPreview')].{Name:name,State:properties.state}" `
+                   | ConvertFrom-Json
+    $featureStatus = $featureInfo[0].State
     if ($featureStatus -eq "Registered") {
         break;
     }
 
     Write-Host "Microsoft.ContainerService/WindowsPreview is still in state $featureStatus, waiting..."
     Start-Sleep -Seconds 10
-} while ($featureInfo) 
+} while ($featureInfo)
 
 
 az provider register `
    --namespace Microsoft.ContainerService
+
+do {
+    $providerInfo = az provider show -n Microsoft.ContainerService | ConvertFrom-Json
+    $providerStatus = $providerInfo.registrationState
+    if ($providerStatus -eq "Registered") {
+        break;
+    }
+
+    Write-Host "Microsoft.ContainerService provider is still in state $providerStatus, waiting..."
+    Start-Sleep -Seconds 10
+} while ($featureInfo)
 
 az group create `
    --name $resourceGroupName `
@@ -64,11 +77,12 @@ az aks nodepool add `
    --resource-group $resourceGroupName `
    --cluster-name $aksClusterName `
    --os-type Windows `
-   --name $windowsNodePoolName l `
+   --name $windowsNodePoolName `
    --node-count 1 `
    --kubernetes-version $kubernetesVersion
 
 az aks install-cli
+$env:path += ";$env:userprofile\.azure-kubectl"
 
 az aks get-credentials `
    --resource-group $resourceGroupName `
