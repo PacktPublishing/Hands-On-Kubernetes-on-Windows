@@ -267,6 +267,7 @@ if ($Join.IsPresent)
     if ($Global:Cni -eq "flannel")
     {
         CreateExternalNetwork -NetworkMode $Global:NetworkMode -InterfaceName $Global:InterfaceName
+        WaitForNetworkInterface -IpAddress $Global:ManagementIp
         StartFlanneld 
         WaitForNetwork $Global:NetworkName
     }
