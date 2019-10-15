@@ -693,8 +693,8 @@ function GetKubeletArguments()
         #'--resolv-conf=\"\"',
         #'--allow-privileged=true',
         #'--enable-debugging-handlers', # Comment for Config
-        #"--cluster-dns=$KubeDnsServiceIp", # Comment for Config
-        #'--cluster-domain=cluster.local', # Comment for Config
+        "--cluster-dns=$KubeDnsServiceIp", # Comment for Config
+        '--cluster-domain=cluster.local', # Comment for Config
         #'--hairpin-mode=promiscuous-bridge', # Comment for Config
         '--image-pull-progress-deadline=20m'
         '--cgroups-per-qos=false'
