@@ -792,7 +792,7 @@ function InstallKubelet()
 
     # Investigate why the below doesn't work, probably a syntax error with the args
     #New-Service -Name "kubelet" -StartupType Automatic -BinaryPathName "$kubeletArgs"
-    kubeadm join "$(GetAPIServerEndpoint)" --token "$Global:Token" --discovery-token-ca-cert-hash "$Global:CAHash"
+    kubeadm join "$(GetAPIServerEndpoint)" --token "$Global:Token" --discovery-token-ca-cert-hash "$Global:CAHash" --v=3
     # Open firewall for 10250. Required for kubectl exec pod <>
     if (!(Get-NetFirewallRule -Name KubeletAllow10250 -ErrorAction SilentlyContinue ))
     {
@@ -1220,7 +1220,7 @@ function GetKubeDnsServiceIp()
 
 function GetAPIServerEndpoint() {
     $endpoints = ConvertFrom-Json $(kubectl.exe get endpoints --all-namespaces -o json | Out-String)
-    $endpoints.Items | foreach { $i = $_; if ($i.Metadata.Name -eq "kubernetes") { return "$($i.subsets.addresses.ip[0]):$($i.subsets.ports[0].port)" } }
+    $endpoints.Items | Where-Object { $_.Metadata.Name -eq "kubernetes" } | ForEach-Object { "$($_.subsets[0].addresses[0].ip):$($_.subsets[0].ports[0].port)" }
 }
 
 function GetKubeNodes()
