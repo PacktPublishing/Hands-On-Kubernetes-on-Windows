@@ -3,7 +3,14 @@
   "properties": {
     "orchestratorProfile": {
       "orchestratorType": "Kubernetes",
-      "orchestratorRelease": "1.16"
+      "orchestratorRelease": "1.16",
+      "kubernetesConfig": {
+        "addons": [{
+            "name": "container-monitoring",
+            "enabled": true
+          }
+        ]
+      }
     },
     "masterProfile": {
       "count": 1,
