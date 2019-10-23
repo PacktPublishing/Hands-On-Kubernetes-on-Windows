@@ -9,7 +9,7 @@ Param(
     [string]$windowsUserName = "azureuser",
     [Parameter(mandatory=$true)]
     [ValidatePattern("^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%\^&\*\(\)])[a-zA-Z\d!@#$%\^&\*\(\)]{12,123}$")]
-    [string]$windowsPassword
+    [string]$windowsPassword,
     [Parameter(mandatory=$true)]
     [string]$azureSubscriptionId,
     [Parameter(mandatory=$true)]
@@ -52,7 +52,8 @@ az group deployment create `
    --template-file "./_output/$dnsPrefix/azuredeploy.json" `
    --parameters "./_output/$dnsPrefix/azuredeploy.parameters.json"
 
-$env:KUBECONFIG="$env:USERPROFILE\.kube\config;.\_output\$dnsPrefix\kubeconfig\kubeconfig.$azureLocation.json"
+$env:KUBECONFIG=".\_output\$dnsPrefix\kubeconfig\kubeconfig.$azureLocation.json;$env:USERPROFILE\.kube\config"
 
+kubectl config use-context $dnsPrefix
 kubectl get nodes
 kubectl get pods --all-namespaces
