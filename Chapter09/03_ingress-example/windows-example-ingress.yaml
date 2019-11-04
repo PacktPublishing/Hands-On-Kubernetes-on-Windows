@@ -1,0 +1,17 @@
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: windows-example-ingress
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /windows-example(/|$)(.*)
+        backend:
+          serviceName: windows-example
+          servicePort: 80

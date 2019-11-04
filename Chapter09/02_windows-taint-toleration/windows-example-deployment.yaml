@@ -1,0 +1,30 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: windows-example
+  labels:
+    app: sample
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: windows-example
+  template:
+    metadata:
+      name: windows-example
+      labels:
+        app: windows-example
+    spec:
+      nodeSelector:
+        "beta.kubernetes.io/os": windows
+      tolerations:
+      - key: "os"
+        operator: "Equal"
+        value: "Win1809"
+        effect: "NoSchedule"
+      containers:
+      - name: windows-example
+        image: mcr.microsoft.com/dotnet/core/samples:aspnetapp-nanoserver-1809
+        ports:
+          - containerPort: 80
