@@ -27,7 +27,7 @@ spec:
         "beta.kubernetes.io/os": windows
       containers:
       - name: windows-example
-        image: packtpubkubernetesonwindows/voting-application:0.1.5
+        image: packtpubkubernetesonwindows/voting-application:1.0.0
         env:
         - name: MSSQL_SA_PASSWORD
           valueFrom:

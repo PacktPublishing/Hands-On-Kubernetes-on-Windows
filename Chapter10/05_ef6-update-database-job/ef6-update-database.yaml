@@ -13,7 +13,7 @@ spec:
         "beta.kubernetes.io/os": windows
       containers:
       - name: ef6-update-database
-        image: packtpubkubernetesonwindows/voting-application:0.1.5
+        image: packtpubkubernetesonwindows/voting-application:1.0.0
         command: ["c:/ef6/ef6.exe",
                   "database", "update", 
                   "--verbose",
