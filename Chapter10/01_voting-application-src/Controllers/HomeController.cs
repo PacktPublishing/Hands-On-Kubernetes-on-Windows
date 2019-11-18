@@ -23,7 +23,7 @@
 
         public ActionResult Index()
         {
-            ViewBag.Title = "Kubernetes on Windows Voting Application - Home Page";
+            this.ViewBag.Title = "Kubernetes on Windows Voting Application - Home Page";
 
             var defaultSurvey = this.db.Surveys.FirstOrDefault(s => s.IsDefault) ?? this.db.Surveys.FirstOrDefault();
 
