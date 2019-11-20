@@ -3,10 +3,11 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   namespace: dev
-  name: voting-application-ef6-update-database3
+  name: voting-application-ef6-update-database
   labels:
     app: voting-application
 spec:
+  ttlSecondsAfterFinished: 600
   template:
     spec:
       nodeSelector:

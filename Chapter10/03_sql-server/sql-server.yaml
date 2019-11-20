@@ -23,8 +23,8 @@ spec:
     requests:
       storage: 8Gi
 ---
-apiVersion: apps/v1
 kind: Deployment
+apiVersion: apps/v1
 metadata:
   namespace: dev
   name: mssql-deployment
@@ -71,8 +71,8 @@ spec:
       nodeSelector:
         "beta.kubernetes.io/os": linux
 ---
-apiVersion: v1
 kind: Service
+apiVersion: v1
 metadata:
   namespace: dev
   name: mssql-deployment
