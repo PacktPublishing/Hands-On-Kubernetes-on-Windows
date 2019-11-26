@@ -1,0 +1,42 @@
+FROM mcr.microsoft.com/dotnet/framework/sdk:4.8-windowsservercore-ltsc2019 AS build
+ARG PUBLISH_PROFILE=DockerPublishProfileDebug.pubxml
+ARG BUILD_CONFIG=Debug
+
+WORKDIR /app
+
+# Copy csproj and restore as distinct layers
+COPY *.sln ./
+COPY *.csproj ./
+COPY *.config ./
+RUN nuget restore
+
+# Copy everything else and build app
+COPY . .
+RUN msbuild /p:DeployOnBuild=true /p:PublishProfile=$env:PUBLISH_PROFILE /p:Configuration=$env:BUILD_CONFIG
+
+
+FROM mcr.microsoft.com/dotnet/framework/aspnet:4.8-windowsservercore-ltsc2019 AS runtime
+
+# Install Visual Studio remote debugging tools
+WORKDIR /temp
+RUN powershell.exe -Command Invoke-WebRequest https://aka.ms/vs/16/release/RemoteTools.amd64ret.enu.exe -OutFile VS_RemoteTools.exe 
+RUN powershell.exe -Command ./VS_RemoteTools.exe /install /quiet
+EXPOSE 4020
+
+# Copy EF6 migration tools
+WORKDIR /ef6
+COPY --from=build /app/packages/EntityFramework.6.3.0/tools/net45/any/ .
+
+# Ensure that proper EventLog log is created which is used by Serilog
+RUN powershell.exe -Command New-EventLog -LogName VotingApplication -Source VotingApplication
+
+# Add and configure LogMonitor
+WORKDIR /LogMonitor
+ADD https://github.com/microsoft/windows-container-tools/releases/download/v1.0/LogMonitor.exe .
+COPY --from=build /app/LogMonitorConfig.json .
+SHELL ["C:\\LogMonitor\\LogMonitor.exe", "powershell.exe"]
+
+WORKDIR /inetpub/wwwroot
+COPY --from=build /app/obj/Docker/publish/. .
+
+ENTRYPOINT Start-Process -NoNewWindow 'C:\Program Files\Microsoft Visual Studio 16.0\Common7\IDE\Remote Debugger\x64\msvsmon.exe' -ArgumentList /nostatus,/silent,/noauth,/anyuser,/nosecuritywarn,/port,4020; C:\ServiceMonitor.exe w3svc

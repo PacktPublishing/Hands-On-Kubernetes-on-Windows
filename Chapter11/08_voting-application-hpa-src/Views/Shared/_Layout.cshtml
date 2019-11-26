@@ -1,0 +1,46 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                @Html.ActionLink("Kubernetes on Windows - Voting Application", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li>@Html.ActionLink("Featured Survey!", "Index", "Home", new { area = "" }, null)</li>
+                    <li>@Html.ActionLink("Surveys", "Index", "Surveys", new { area = "" }, null)</li>
+                    <li>@Html.ActionLink("Options", "Index", "Options", new { area = "" }, null)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="container body-content">
+        <div class="margin-xl">
+            @RenderBody()
+        </div>
+        <br />
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - Kubernetes on Windows Voting Application</p>
+            <p>Served by: @Dns.GetHostEntry("").HostName (@Request.ServerVariables["LOCAL_ADDR"])</p>
+        </footer>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>
