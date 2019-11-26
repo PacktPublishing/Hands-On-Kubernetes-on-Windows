@@ -1,0 +1,19 @@
+---
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: prod
+  labels:
+    name: prod
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  namespace: prod
+  name: default-resource-quota
+spec:
+  hard:
+    requests.cpu: 500m
+    requests.memory: 1Gi
+    limits.cpu: "1"
+    limits.memory: 2Gi
