@@ -1,0 +1,36 @@
+FROM mcr.microsoft.com/dotnet/framework/sdk:4.8-windowsservercore-ltsc2019 AS build
+ARG PUBLISH_PROFILE=DockerPublishProfile.pubxml
+ARG BUILD_CONFIG=Release
+
+WORKDIR /app
+
+# Copy csproj and restore as distinct layers
+COPY *.sln ./
+COPY *.csproj ./
+COPY *.config ./
+RUN nuget restore
+
+# Copy everything else and build app
+COPY . .
+RUN msbuild /p:DeployOnBuild=true /p:PublishProfile=$env:PUBLISH_PROFILE /p:Configuration=$env:BUILD_CONFIG
+
+
+FROM mcr.microsoft.com/dotnet/framework/aspnet:4.8-windowsservercore-ltsc2019 AS runtime
+
+# Copy EF6 migration tools
+WORKDIR /ef6
+COPY --from=build /app/packages/EntityFramework.6.3.0/tools/net45/any/ .
+
+# Ensure that proper EventLog log is created which is used by Serilog
+RUN powershell.exe -Command New-EventLog -LogName VotingApplication -Source VotingApplication
+
+# Add and configure LogMonitor
+WORKDIR /LogMonitor
+ADD https://github.com/microsoft/windows-container-tools/releases/download/v1.0/LogMonitor.exe .
+COPY --from=build /app/LogMonitorConfig.json .
+SHELL ["C:\\LogMonitor\\LogMonitor.exe", "powershell.exe"]
+
+WORKDIR /inetpub/wwwroot
+COPY --from=build /app/obj/Docker/publish/. .
+
+ENTRYPOINT C:\ServiceMonitor.exe w3svc

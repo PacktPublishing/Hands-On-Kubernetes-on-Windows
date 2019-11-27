@@ -1,0 +1,14 @@
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  namespace: dev
+  name: voting-application-frontend
+spec:
+  minReplicas: 1
+  maxReplicas: 8
+  targetCPUUtilizationPercentage: 60
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: voting-application-frontend
