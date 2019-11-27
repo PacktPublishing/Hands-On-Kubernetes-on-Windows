@@ -209,6 +209,7 @@
     <Content Include="Global.asax" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="config\customErrors.config" />
     <None Include="Dockerfile" />
     <Content Include="LogMonitorConfig.json" />
     <None Include="Dockerfile.production" />
