@@ -1,31 +1,6 @@
 ---
-kind: StorageClass
-apiVersion: storage.k8s.io/v1beta1
-metadata:
-  namespace: dev
-  name: azure-disk
-provisioner: kubernetes.io/azure-disk
-parameters:
-  storageaccounttype: Standard_LRS
-  kind: Managed
----
-apiVersion: v1
-kind: Service
-metadata:
-  namespace: dev
-  name: voting-application-frontend
-  labels:
-    app: voting-application
-spec:
-  type: LoadBalancer
-  ports:
-  - protocol: TCP
-    port: 80
-  selector:
-    app: voting-application
----
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   namespace: dev
   name: voting-application-frontend
@@ -33,7 +8,12 @@ metadata:
     app: voting-application
 spec:
   replicas: 5
-  serviceName: voting-application-frontend
+  minReadySeconds: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
   selector:
     matchLabels:
       app: voting-application
@@ -45,16 +25,9 @@ spec:
     spec:
       nodeSelector:
         "beta.kubernetes.io/os": windows
-      initContainers:
-      - name: volume-mount-permissions-fix
-        image: packtpubkubernetesonwindows/voting-application:1.4.0
-        command: ["powershell.exe", "-Command", "iisreset.exe /START; icacls.exe c:\\data /grant '\"IIS AppPool\\DefaultAppPool\":RW'"]
-        volumeMounts:
-        - mountPath: C:/data
-          name: voting-log-volume
       containers:
       - name: frontend
-        image: packtpubkubernetesonwindows/voting-application:1.4.0
+        image: packtpubkubernetesonwindows/voting-application:1.2.0
         env:
         - name: MSSQL_SA_PASSWORD
           valueFrom:
@@ -98,20 +71,20 @@ spec:
           limits:
             cpu: 500m
           requests:
-            cpu: 250m
+            cpu: 400m
             memory: 256Mi
-        volumeMounts:
-        - mountPath: C:/data
-          name: voting-log-volume
-  volumeClaimTemplates:
-  - metadata:
-      name: voting-log-volume
-      labels:
-        app: voting-application
-    spec:
-      accessModes:
-        - ReadWriteOnce
-      resources:
-        requests:
-          storage: 100Mi
-      storageClassName: azure-disk
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: dev
+  name: voting-application-frontend
+  labels:
+    app: voting-application
+spec:
+  type: LoadBalancer
+  ports:
+  - protocol: TCP
+    port: 80
+  selector:
+    app: voting-application
