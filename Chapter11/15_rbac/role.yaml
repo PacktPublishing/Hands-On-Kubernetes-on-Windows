@@ -1,0 +1,15 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: dev
+  name: voting-application-data-reader
+rules:
+- apiGroups: [""]
+  resources: ["configmaps"]
+  resourceNames: ["voting-application-customerrors-config"]
+  verbs: ["get"]
+- apiGroups: [""]
+  resources: ["secret"]
+  resourceNames: ["mssql"]
+  verbs: ["get"]
