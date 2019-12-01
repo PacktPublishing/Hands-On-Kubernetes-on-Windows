@@ -1,0 +1,17 @@
+acceptEula:
+  value: "y"
+
+edition:
+  value: Developer
+
+sapassword: "S3cur3P@ssw0rd"
+
+service:
+  type: LoadBalancer
+
+persistence:
+  enabled: true
+  storageClass: azure-disk
+
+nodeSelector:
+  "kubernetes.io/os": linux

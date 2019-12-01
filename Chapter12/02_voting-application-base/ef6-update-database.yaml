@@ -1,0 +1,32 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  namespace: dev
+  name: voting-application-ef6-update-database
+  labels:
+    app: voting-application
+spec:
+  ttlSecondsAfterFinished: 600
+  template:
+    spec:
+      nodeSelector:
+        "beta.kubernetes.io/os": windows
+      containers:
+      - name: ef6-update-database
+        image: packtpubkubernetesonwindows/voting-application:1.0.0
+        command: ["c:/ef6/ef6.exe",
+                  "database", "update", 
+                  "--verbose",
+                  "--assembly", "/inetpub/wwwroot/bin/VotingApplication.dll",
+                  "--connection-string", "Data Source=mssql-deployment;Initial Catalog=VotingApplication;MultipleActiveResultSets=true;User Id=sa;Password=$(MSSQL_SA_PASSWORD);",
+                  "--connection-provider", "System.Data.SqlClient",
+                  "--config", "/inetpub/wwwroot/Web.config"]
+        env:
+        - name: MSSQL_SA_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mssql
+              key: SA_PASSWORD
+      restartPolicy: Never
+  backoffLimit: 4
