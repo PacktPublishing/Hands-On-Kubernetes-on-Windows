@@ -5,7 +5,7 @@ metadata:
   name: {{ include "voting-application.fullname" . }}-data-reader
 subjects:
 - kind: ServiceAccount
-  name: {{ include "voting-application.fullname" . }}
+  name: {{ include "voting-application.serviceAccountName" . }} 
 roleRef:
   kind: Role
   name: {{ include "voting-application.fullname" . }}-data-reader
