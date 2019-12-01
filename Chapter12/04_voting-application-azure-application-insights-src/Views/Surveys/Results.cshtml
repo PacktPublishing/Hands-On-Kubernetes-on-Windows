@@ -1,0 +1,21 @@
+﻿@model VotingApplication.ViewModels.SurveyResult
+
+@{
+    ViewBag.Title = $"{Model.Name} - Results";
+}
+
+<div class="span6">
+    <h1>Survey: @Html.DisplayFor(model => model.Name)</h1>
+    @foreach (var optionResult in Model.OptionResults)
+    {
+        <strong>@Html.DisplayFor(model => optionResult.Name)</strong><span class="pull-right">@optionResult.Value.ToString("0.0")%</span>
+        <div class="progress progress-striped active">
+            <div class="progress-bar" style="width: @optionResult.Value.ToString("0.0")%;"></div>
+        </div>
+    }
+    <p class="pull-right">Total: @Html.DisplayFor(model => model.Total)</p>
+    <h2>
+        Haven't voted yet?&nbsp;
+        @Html.ActionLink(HttpUtility.HtmlDecode("Vote &raquo;"), "Vote", "Surveys", new { id = Model.Id }, new { @class = "btn btn-primary btn-lg" })
+    </h2>
+</div>
