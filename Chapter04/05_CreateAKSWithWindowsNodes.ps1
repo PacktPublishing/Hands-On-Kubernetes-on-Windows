@@ -6,7 +6,7 @@ Param(
     [Parameter()]
     [string]$aksClusterName = "aks-windows-cluster",
     [Parameter()]
-    [string]$kubernetesVersion = "1.15.3",
+    [string]$kubernetesVersion = "1.15.4",
     [Parameter()]
     [string]$windowsNodePoolName = "w1pool",
     [Parameter()]

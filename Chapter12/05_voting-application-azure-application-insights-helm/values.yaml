@@ -2,7 +2,7 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-azureApplicationInsightsKey: f28d292c-6639-4ce3-8f12-857d899e672a
+azureApplicationInsightsKey: 4e810bf1-58c4-4af7-a67d-36fcdcf24a2f
 
 replicaCount: 5
 minReadySeconds: 5
