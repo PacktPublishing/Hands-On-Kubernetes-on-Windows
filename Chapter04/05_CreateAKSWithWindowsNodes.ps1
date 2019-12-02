@@ -13,7 +13,9 @@ Param(
     [string]$windowsUserName = "azureuser",
     [Parameter(mandatory=$true)]
     [ValidatePattern("^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%\^&\*\(\)])[a-zA-Z\d!@#$%\^&\*\(\)]{12,123}$")]
-    [string]$windowsPassword
+    [string]$windowsPassword,
+    [Parameter()]
+    [bool]$skipAddingWindowsNodePool = $false
 )
 
 # Run as ADMINISTRATOR.
@@ -73,13 +75,15 @@ az aks create `
    --enable-vmss `
    --network-plugin azure
 
-az aks nodepool add `
-   --resource-group $resourceGroupName `
-   --cluster-name $aksClusterName `
-   --os-type Windows `
-   --name $windowsNodePoolName `
-   --node-count 1 `
-   --kubernetes-version $kubernetesVersion
+if (!$skipAddingWindowsNodePool) {
+    az aks nodepool add `
+       --resource-group $resourceGroupName `
+       --cluster-name $aksClusterName `
+       --os-type Windows `
+       --name $windowsNodePoolName `
+       --node-count 1 `
+       --kubernetes-version $kubernetesVersion
+}
 
 az aks install-cli
 $env:path += ";$env:userprofile\.azure-kubectl"
