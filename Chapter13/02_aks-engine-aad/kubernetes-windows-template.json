@@ -1,0 +1,66 @@
+{
+  "apiVersion": "vlabs",
+  "properties": {
+    "orchestratorProfile": {
+      "orchestratorType": "Kubernetes",
+      "orchestratorRelease": "1.16"
+    },
+    "masterProfile": {
+      "count": 1,
+      "dnsPrefix": "<use your unique DNS prefix>",
+      "vmSize": "Standard_D2_v3"
+    },
+    "agentPoolProfiles": [
+      {
+        "name": "linuxpool1",
+        "count": 1,
+        "vmSize": "Standard_D2_v3",
+        "availabilityProfile": "AvailabilitySet"
+      },
+      {
+        "name": "windowspool2",
+        "count": 1,
+        "vmSize": "Standard_D2_v3",
+        "availabilityProfile": "AvailabilitySet",
+        "osType": "Windows",
+        "osDiskSizeGB": 128,
+        "extensions": [
+            {
+                "name": "winrm"
+            }
+        ]
+      }
+    ],
+    "windowsProfile": {
+      "adminUsername": "azureuser",
+      "adminPassword": "S3cur3P@ssw0rd",
+      "sshEnabled": true
+    },
+    "linuxProfile": {
+      "adminUsername": "azureuser",
+      "ssh": {
+        "publicKeys": [
+          {
+            "keyData": "<use your SSH public key>"
+          }
+        ]
+      }
+    },
+    "servicePrincipalProfile": {
+      "clientId": "<use your Service Principal appId>",
+      "secret": "<use your Service Principal password>"
+    },
+    "extensionProfiles": [
+      {
+        "name": "winrm",
+        "version": "v1"
+      }
+    ],
+    "aadProfile": {
+      "serverAppID": "98b9309c-594d-4148-aea6-1189e7cc2ecb",
+      "clientAppID": "9cdccabc-28df-4e27-ab5e-d9f91103ebe0",
+      "tenantID": "86be0945-a0f3-44c2-8868-9b6aa96b0b62",
+      "adminGroupID": "18d047eb-83f9-4740-96be-59555e88138f"
+    }
+  }
+}
