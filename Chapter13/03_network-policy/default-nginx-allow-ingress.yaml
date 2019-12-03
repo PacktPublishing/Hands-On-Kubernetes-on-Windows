@@ -1,0 +1,15 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  namespace: default
+  name: default-nginx-allow-ingress
+spec:
+  podSelector:
+    matchLabels:
+      app: nginx
+  ingress:
+  - from: []
+    ports:
+    - protocol: TCP
+      port: 80
