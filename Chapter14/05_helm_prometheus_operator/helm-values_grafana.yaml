@@ -1,0 +1,25 @@
+nodeSelector:
+  "kubernetes.io/os": linux
+
+service:
+  type: LoadBalancer
+
+persistence:
+  enabled: true
+  storageClassName: azure-disk
+  size: 20Gi
+  accessModes:
+   - ReadWriteOnce
+
+adminUser: admin
+adminPassword: P@ssword
+
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+    - name: Prometheus
+      type: prometheus
+      url: http://prometheus-server
+      access: proxy
+      isDefault: true
