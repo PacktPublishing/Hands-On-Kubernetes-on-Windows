@@ -29,4 +29,6 @@ spec:
               name: mssql
               key: SA_PASSWORD
       restartPolicy: Never
+      nodeSelector:
+        "beta.kubernetes.io/os": windows
   backoffLimit: 4

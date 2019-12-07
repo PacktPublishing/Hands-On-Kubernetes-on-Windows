@@ -6,6 +6,13 @@ metadata:
   labels:
     name: monitoring
 ---
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: dev-helm
+  labels:
+    name: dev-helm
+---
 kind: StorageClass
 apiVersion: storage.k8s.io/v1beta1
 metadata:
