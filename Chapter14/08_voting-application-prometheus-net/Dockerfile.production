@@ -1,0 +1,53 @@
+FROM mcr.microsoft.com/dotnet/framework/sdk:4.8-windowsservercore-ltsc2019 AS build
+ARG PUBLISH_PROFILE=DockerPublishProfile.pubxml
+ARG BUILD_CONFIG=Release
+
+WORKDIR /app
+
+# Copy csproj and restore as distinct layers
+COPY *.sln ./
+COPY *.csproj ./
+COPY *.config ./
+RUN nuget restore
+
+# Copy everything else and build app
+COPY . .
+RUN msbuild /p:DeployOnBuild=true /p:PublishProfile=$env:PUBLISH_PROFILE /p:Configuration=$env:BUILD_CONFIG
+
+
+FROM mcr.microsoft.com/dotnet/framework/aspnet:4.8-windowsservercore-ltsc2019 AS runtime
+
+# Install and configure Telegraf
+WORKDIR /temp
+RUN powershell -Command \
+    Invoke-WebRequest https://dl.influxdata.com/telegraf/releases/telegraf-1.12.6_windows_amd64.zip -OutFile telegraf.zip \
+  ; powershell -Command  Expand-Archive -Path telegraf.zip -DestinationPath C:\temp \
+  ; Remove-Item -Path telegraf.zip \
+  ; mkdir c:\telegraf \
+  ; Move-Item -Path c:\temp\telegraf\telegraf.exe -Destination c:\telegraf
+
+WORKDIR /telegraf
+RUN powershell -Command \
+    mkdir telegraf.d \
+  ; .\telegraf.exe --service install --config C:\telegraf\telegraf.conf --config-directory C:\telegraf\telegraf.d
+COPY telegraf.conf .
+EXPOSE 9273
+
+# Copy EF6 migration tools
+WORKDIR /ef6
+COPY --from=build /app/packages/EntityFramework.6.3.0/tools/net45/any/ .
+
+# Ensure that proper EventLog log is created which is used by Serilog
+RUN powershell.exe -Command New-EventLog -LogName VotingApplication -Source VotingApplication
+
+# Add and configure LogMonitor
+WORKDIR /LogMonitor
+ADD https://github.com/microsoft/windows-container-tools/releases/download/v1.0/LogMonitor.exe .
+COPY --from=build /app/LogMonitorConfig.json .
+SHELL ["C:\\LogMonitor\\LogMonitor.exe", "powershell.exe"]
+
+WORKDIR /inetpub/wwwroot
+COPY --from=build /app/obj/Docker/publish/. .
+
+ENTRYPOINT Start-Service telegraf \
+         ; C:\ServiceMonitor.exe w3svc
