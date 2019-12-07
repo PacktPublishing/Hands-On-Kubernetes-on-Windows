@@ -46,6 +46,9 @@ spec:
             - name: http
               containerPort: 80
               protocol: TCP
+            - name: telegraf
+              containerPort: 9323
+              protocol: TCP
           readinessProbe:
             httpGet:
               path: /health

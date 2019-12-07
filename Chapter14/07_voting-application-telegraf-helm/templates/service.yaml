@@ -4,6 +4,9 @@ metadata:
   name: {{ include "voting-application.fullname" . }}
   labels:
     {{- include "voting-application.labels" . | nindent 4 }}
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9273"
 spec:
   type: {{ .Values.service.type }}
   ports:

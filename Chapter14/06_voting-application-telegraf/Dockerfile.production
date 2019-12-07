@@ -17,6 +17,7 @@ RUN msbuild /p:DeployOnBuild=true /p:PublishProfile=$env:PUBLISH_PROFILE /p:Conf
 
 FROM mcr.microsoft.com/dotnet/framework/aspnet:4.8-windowsservercore-ltsc2019 AS runtime
 
+# Install and configure Telegraf
 WORKDIR /temp
 RUN powershell -Command \
     Invoke-WebRequest https://dl.influxdata.com/telegraf/releases/telegraf-1.12.6_windows_amd64.zip -OutFile telegraf.zip \
@@ -30,8 +31,6 @@ RUN powershell -Command \
     mkdir telegraf.d \
   ; .\telegraf.exe --service install --config C:\telegraf\telegraf.conf --config-directory C:\telegraf\telegraf.d
 COPY telegraf.conf .
-RUN powershell -Command \
-    Start-Service telegraf
 EXPOSE 9273
 
 # Copy EF6 migration tools
@@ -50,4 +49,5 @@ SHELL ["C:\\LogMonitor\\LogMonitor.exe", "powershell.exe"]
 WORKDIR /inetpub/wwwroot
 COPY --from=build /app/obj/Docker/publish/. .
 
-ENTRYPOINT C:\ServiceMonitor.exe w3svc
+ENTRYPOINT Start-Service telegraf \
+         ; C:\ServiceMonitor.exe w3svc
