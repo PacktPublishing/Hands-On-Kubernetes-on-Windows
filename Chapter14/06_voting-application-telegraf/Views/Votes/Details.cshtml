@@ -1,0 +1,42 @@
+﻿@model VotingApplication.Models.Vote
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Vote</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Option.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Option.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Survey.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Survey.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CreateDate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CreateDate)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

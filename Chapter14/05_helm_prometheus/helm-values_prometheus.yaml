@@ -55,7 +55,7 @@ extraScrapeConfigs: |
        regex: (.+)
        target_label: __metrics_path__
        replacement: /metrics
-     - sourceLabel: [__meta_kubernetes_node_name]
+     - source_labels: [__meta_kubernetes_node_name]
        action: replace
        target_label: node
        regex: (.*)
