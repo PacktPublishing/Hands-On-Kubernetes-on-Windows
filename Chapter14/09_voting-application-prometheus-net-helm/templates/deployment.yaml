@@ -49,6 +49,9 @@ spec:
             - name: telegraf
               containerPort: 9273
               protocol: TCP
+            - name: application-metrics
+              containerPort: 9274
+              protocol: TCP
           readinessProbe:
             httpGet:
               path: /health

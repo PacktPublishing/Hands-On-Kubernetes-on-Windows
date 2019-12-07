@@ -1,0 +1,6 @@
+dependencies:
+- name: mssql-linux
+  repository: https://kubernetes-charts.storage.googleapis.com
+  version: 0.10.1
+digest: sha256:c219b8d3dd8eff49965c6d845f307a2b15c8ad661a529fdc4faab57856c8ab03
+generated: "2019-11-30T16:33:54.9470376+01:00"

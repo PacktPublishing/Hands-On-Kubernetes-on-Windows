@@ -12,7 +12,7 @@
     {
         protected void Application_Start()
         {
-            var server = new MetricServer(hostname: "localhost", port: 9274);
+            var server = new MetricServer(port: 9274);
             server.Start();
 
             AreaRegistration.RegisterAllAreas();

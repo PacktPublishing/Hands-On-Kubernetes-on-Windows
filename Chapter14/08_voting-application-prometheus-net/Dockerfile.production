@@ -33,6 +33,9 @@ RUN powershell -Command \
 COPY telegraf.conf .
 EXPOSE 9273
 
+RUN "netsh http add urlacl url=http://+:9274/metrics user=\"IIS AppPool\DefaultAppPool\""
+EXPOSE 9274
+
 # Copy EF6 migration tools
 WORKDIR /ef6
 COPY --from=build /app/packages/EntityFramework.6.3.0/tools/net45/any/ .

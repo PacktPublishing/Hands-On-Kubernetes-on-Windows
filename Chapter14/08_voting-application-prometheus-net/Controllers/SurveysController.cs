@@ -199,7 +199,8 @@
                 };
 
                 this.voteLogManager.Append(vote);
-                this.db.Votes.Add(vote);                
+                this.db.Votes.Add(vote);
+                DbAddedVotesCount.Inc();
             }
 
             await this.db.SaveChangesAsync();
@@ -221,7 +222,11 @@
                 return this.HttpNotFound();
             }
 
-            var result = this.GetSurveyResult(survey);
+            SurveyResult result;
+            using (GetSurveyResultOperationDuration.NewTimer())
+            {
+                result = this.GetSurveyResult(survey);
+            }
 
             return this.View(result);
         }

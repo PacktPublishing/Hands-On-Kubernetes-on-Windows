@@ -1,0 +1,127 @@
+server:
+  enabled: true
+  global:
+    scrape_interval: 50s
+    scrape_timeout: 15s
+    evaluation_interval: 1m
+  service:
+    type: LoadBalancer
+  nodeSelector:
+    "kubernetes.io/os": linux
+  persistentVolume:
+    storageClass: azure-disk
+
+alertmanager:
+  enabled: true
+  service:
+    type: LoadBalancer
+  nodeSelector:
+    "kubernetes.io/os": linux
+  persistentVolume:
+    storageClass: azure-disk
+
+nodeExporter:
+  enabled: true
+  nodeSelector:
+    "kubernetes.io/os": linux
+
+pushgateway:
+  enabled: true
+  nodeSelector:
+    "kubernetes.io/os": linux
+
+kubeStateMetrics:
+  enabled: true
+  nodeSelector:
+    "kubernetes.io/os": linux
+
+extraScrapeConfigs: |
+   - job_name: windows-nodes-docker-metrics-server
+     kubernetes_sd_configs:
+       - role: node
+     scheme: http
+     relabel_configs:
+     - action: labelmap
+       regex: __meta_kubernetes_node_label_(.+)
+     - source_labels: [__address__]
+       action: replace
+       target_label: __address__
+       regex: ([^:;]+):(\d+)
+       replacement: ${1}:9323
+     c
+     - source_labels: [__meta_kubernetes_node_name]
+       regex: (.+)
+       target_label: __metrics_path__
+       replacement: /metrics
+     - source_labels: [__meta_kubernetes_node_name]
+       action: replace
+       target_label: node
+       regex: (.*)
+       replacement: ${1}
+   - job_name: windows-nodes-wmi-exporter
+     kubernetes_sd_configs:
+       - role: node
+     scheme: http
+     relabel_configs:
+     - action: labelmap
+       regex: __meta_kubernetes_node_label_(.+)
+     - source_labels: [__address__]
+       action: replace
+       target_label: __address__
+       regex: ([^:;]+):(\d+)
+       replacement: ${1}:9182
+     - source_labels: [kubernetes_io_os]
+       action: keep
+       regex: windows
+     - source_labels: [__meta_kubernetes_node_name]
+       regex: (.+)
+       target_label: __metrics_path__
+       replacement: /metrics
+     - source_labels: [__meta_kubernetes_node_name]
+       action: replace
+       target_label: node
+       regex: (.*)
+       replacement: ${1}
+   - job_name: kubernetes-service-endpoints
+     kubernetes_sd_configs:
+     - role: endpoints
+     relabel_configs:
+     - action: keep
+       regex: true
+       source_labels:
+       - __meta_kubernetes_service_annotation_prometheus_io_scrape
+     - action: keep
+       regex: (\d+)
+       source_labels:
+       - __meta_kubernetes_service_annotation_prometheus_io_secondary_port
+     - action: replace
+       regex: (https?)
+       source_labels:
+       - __meta_kubernetes_service_annotation_prometheus_io_scheme
+       target_label: __scheme__
+     - action: replace
+       regex: (.+)
+       source_labels:
+       - __meta_kubernetes_service_annotation_prometheus_io_path
+       target_label: __metrics_path__
+     - action: replace
+       regex: ([^:]+)(?::\d+)?;(\d+)
+       replacement: $1:$2
+       source_labels:
+       - __address__
+       - __meta_kubernetes_service_annotation_prometheus_io_secondary_port
+       target_label: __address__
+     - action: labelmap
+       regex: __meta_kubernetes_service_label_(.+)
+     - action: replace
+       source_labels:
+       - __meta_kubernetes_namespace
+       target_label: kubernetes_namespace
+     - action: replace
+       source_labels:
+       - __meta_kubernetes_service_name
+       target_label: kubernetes_name
+     - action: replace
+       source_labels:
+       - __meta_kubernetes_pod_node_name
+       target_label: kubernetes_node

@@ -13,7 +13,7 @@ rollingUpdate:
 
 image:
   repository: packtpubkubernetesonwindows/voting-application
-  pullPolicy: Always
+  pullPolicy: IfNotPresent
 
 imagePullSecrets: []
 nameOverride: ""
