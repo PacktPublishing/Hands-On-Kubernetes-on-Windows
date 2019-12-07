@@ -82,7 +82,7 @@ extraScrapeConfigs: |
        target_label: node
        regex: (.*)
        replacement: ${1}
-   - job_name: kubernetes-service-endpoints
+   - job_name: kubernetes-service-endpoints-secondary-ports
      kubernetes_sd_configs:
      - role: endpoints
      relabel_configs:
