@@ -1,0 +1,36 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: etcd-snapshot-azure-blob-job
+  namespace: kube-system
+spec:
+  schedule: "0 */6 * * *"  # Every 6 hours
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 21600
+      activeDeadlineSeconds: 600
+      template:
+        spec:
+          tolerations:
+          - key: node-role.kubernetes.io/master
+            operator: Exists
+            effect: NoSchedule
+          nodeSelector:
+            node-role.kubernetes.io/master: ""
+          containers:
+          - name: snapshot-worker
+            image: packtpubkubernetesonwindows/aks-engine-etcd-snapshot-azure-blob-job:1.0.0
+            volumeMounts:
+            - mountPath: /etc/kubernetes/certs
+              name: etcd-certs
+            envFrom:
+            - secretRef:
+                name: etcd-snapshot-azure-blob-job-secrets
+          volumes:
+          - name: etcd-certs
+            hostPath:
+              path: /etc/kubernetes/certs
+          restartPolicy: Never
+          hostNetwork: true
