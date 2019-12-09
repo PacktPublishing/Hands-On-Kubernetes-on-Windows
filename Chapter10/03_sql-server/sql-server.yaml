@@ -11,6 +11,7 @@ parameters:
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
+  namespace: dev
   name: mssql-data
   annotations:
     volume.beta.kubernetes.io/storage-class: azure-disk
