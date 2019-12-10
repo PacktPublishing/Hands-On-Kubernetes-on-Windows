@@ -1,0 +1,19 @@
+---
+apiVersion: helm.fluxcd.io/v1 
+kind: HelmRelease
+metadata:
+  name: voting-application
+  namespace: demo
+  annotations:
+    fluxcd.io/automated: "true"
+spec:
+  releaseName: voting-application
+  helmVersion: v3
+  timeout: 900
+  wait: false
+  rollback:
+    enable: false
+  chart:
+    git: ssh://git@github.com/hands-on-kubernetes-on-windows/voting-application-flux
+    ref: master
+    path: charts/voting-application

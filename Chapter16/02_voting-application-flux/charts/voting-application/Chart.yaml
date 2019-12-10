@@ -1,0 +1,12 @@
+apiVersion: v2
+name: voting-application
+description: Voting Application (Windows Containers) Helm chart
+type: application
+version: 0.4.0
+appVersion: 1.7.0
+dependencies:
+  - name: mssql-linux
+    version: 0.10.1
+    repository: https://kubernetes-charts.storage.googleapis.com
+sources:
+- https://github.com/hands-on-kubernetes-on-windows/voting-application

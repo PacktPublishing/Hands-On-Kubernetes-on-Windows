@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "voting-application.fullname" . }}
+  labels:
+    {{- include "voting-application.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  minReadySeconds: {{ .Values.minReadySeconds }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      {{- toYaml .Values.rollingUpdate | nindent 6 }}
+  selector:
+    matchLabels:
+      {{- include "voting-application.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "voting-application.selectorLabels" . | nindent 8 }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ include "voting-application.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}-frontend
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+          - name: APPINSIGHTS_INSTRUMENTATIONKEY
+            value: {{ .Values.azureApplicationInsightsKey }}
+          - name: MSSQL_SA_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Release.Name }}-mssql-linux-secret
+                key: sapassword
+          - name: CONNECTIONSTRING_VotingApplication
+            value: "Data Source={{ .Release.Name }}-mssql-linux;Initial Catalog=VotingApplication;MultipleActiveResultSets=true;User Id=sa;Password=$(MSSQL_SA_PASSWORD);"
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+            - name: telegraf
+              containerPort: 9273
+              protocol: TCP
+            - name: app-metrics
+              containerPort: 9274
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 80
+            {{- toYaml .Values.probes.readinessProbe | nindent 12 }}
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 80
+            {{- toYaml .Values.probes.startupProbe | nindent 12 }}
+          livenessProbe:
+            exec:
+              command:
+              - powershell.exe
+              - -Command
+              - if ((Get-WebAppPoolState DefaultAppPool).Value -ne "Started") { throw "Default IIS App Pool is NOT started" }
+            {{- toYaml .Values.probes.livenessProbe | nindent 12 }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
