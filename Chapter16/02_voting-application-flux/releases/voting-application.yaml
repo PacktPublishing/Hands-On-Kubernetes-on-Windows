@@ -9,7 +9,7 @@ metadata:
 spec:
   releaseName: voting-application
   helmVersion: v3
-  timeout: 900
+  timeout: 1200
   wait: false
   rollback:
     enable: false

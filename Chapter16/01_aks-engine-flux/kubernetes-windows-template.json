@@ -23,13 +23,7 @@
         "vmSize": "Standard_D2_v3",
         "availabilityProfile": "AvailabilitySet",
         "osType": "Windows",
-        "osDiskSizeGB": 128,
-        "extensions": [
-            {
-                "name": "prometheus-exporters",
-                "singleOrAll": "all"
-            }
-        ]
+        "osDiskSizeGB": 128
       }
     ],
     "windowsProfile": {
@@ -50,14 +44,6 @@
     "servicePrincipalProfile": {
       "clientId": "<use your Service Principal appId>",
       "secret": "<use your Service Principal password>"
-    },
-    "extensionProfiles": [
-      {
-        "name": "prometheus-exporters",
-        "version": "v1",
-        "rootURL": "https://raw.githubusercontent.com/ptylenda/aks-engine-windows-extensions/master/",
-        "extensionParameters": "'/EnabledCollectors:cpu,cs,container,dns,logical_disk,logon,memory,net,os,process,service,system,tcp'"
-      }
-    ]
+    }
   }
 }

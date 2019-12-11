@@ -28,6 +28,8 @@ $servicePrincipal = az ad sp create-for-rbac `
    --scopes="/subscriptions/$azureSubscriptionId/resourceGroups/$resourceGroupName" `
 | ConvertFrom-Json
 
+echo "Your AKS Engine Service Principal:\n$servicePrincipal"
+
 az role assignment create `
    --assignee $servicePrincipal.appId `
    --role "Log Analytics Contributor" `
